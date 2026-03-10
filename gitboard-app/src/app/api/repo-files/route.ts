@@ -3,6 +3,9 @@ import { promises as fs } from 'fs';
 import { join, relative } from 'path';
 import { getProjectRoot } from '@/lib/get-project-root';
 
+// Force dynamic rendering - this route depends on runtime environment
+export const dynamic = 'force-dynamic';
+
 // Directories to exclude from file tree (large/irrelevant folders)
 const EXCLUDED_DIRECTORIES = new Set([
     'node_modules',
