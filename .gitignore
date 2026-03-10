@@ -1,0 +1,56 @@
+# GitBoard worktrees - isolated working directories for each ticket
+.worktrees/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Dependencies
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+**/.next/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+*.zip
+*.tar.gz
+
+# GitBoard File Uploads
+# -----------------------
+# By default, uploaded files in gitboard/uploads/ are tracked by git,
+# which is consistent with GitBoard's file-system based architecture.
+#
+# If you prefer not to track uploaded binary files in git, uncomment the line below:
+# gitboard/uploads/
+#
+# For large binary files, consider configuring Git LFS:
+# https://git-lfs.github.com/
+# Example .gitattributes:
+#   gitboard/uploads/**/*.png filter=lfs diff=lfs merge=lfs -text
+#   gitboard/uploads/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+#   gitboard/uploads/**/*.pdf filter=lfs diff=lfs merge=lfs -text
+.gitboard/app/node_modules/
+.gitboard/

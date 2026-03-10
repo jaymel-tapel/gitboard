@@ -1,0 +1,46 @@
+{
+  "name": "gitboard-standalone",
+  "version": "1.0.0",
+  "description": "Standalone GitBoard - Git-native project management",
+  "scripts": {
+    "dev": "ollama serve & node server.cjs",
+    "dev:next": "next dev -p 3456",
+    "build": "next build",
+    "start": "ollama serve & NODE_ENV=production node server.cjs",
+    "setup": "node scripts/setup.js"
+  },
+  "dependencies": {
+    "@homebridge/node-pty-prebuilt-multiarch": "^0.13.1",
+    "@libsql/client": "^0.17.0",
+    "@mastra/core": "^1.0.4",
+    "@mastra/libsql": "^1.0.0",
+    "@mastra/rag": "^2.0.0",
+    "@radix-ui/react-select": "^2.2.6",
+    "chokidar": "^3.5.3",
+    "glob": "^13.0.0",
+    "highlight.js": "^11.11.1",
+    "next": "^14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
+    "simple-git": "^3.21.0",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
+    "unist-util-visit": "^5.0.0",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.16",
+    "ignore-loader": "^0.1.2",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.0"
+  }
+}
