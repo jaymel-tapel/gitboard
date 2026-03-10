@@ -1,29 +1,76 @@
 # GitBoard
 
-**Git-native project management for AI-assisted development.**
+**The production line for AI-assisted work.**
 
-Your tickets, docs, and project state live in git - not in an external database.
+Your tickets, docs, and project state live in git - version controlled, portable, and yours.
+
+## Vision
+
+Before machines, people did everything manually. After machines, a new role emerged: **machine operator**. The same shift is happening with AI.
+
+GitBoard treats your kanban board as a **factory floor**:
+
+```
+[Research] → [Draft] → [Review] → [Optimize] → [Publish]
+   AI work    Human QC    AI work    Human QC     Done
+            (approve)              (approve)
+```
+
+- **Columns are stations**, not just statuses
+- **AI agents do the work** at each station
+- **Humans supervise and approve** before the next phase
+- **Artifacts are the output** at each stage
+- **Git history is your audit trail**
+
+The new job isn't "writer" - it's **editorial supervisor**.
+The new job isn't "designer" - it's **creative director**.
+The new job isn't "coder" - it's **code reviewer**.
 
 ## Why GitBoard?
 
-Traditional PM tools (Jira, Linear, Asana) have a fundamental problem: **they're disconnected from your code**.
+**Traditional PM tools are disconnected from reality.**
 
-- Jira says the ticket is "In Progress"
-- Git shows the PR was merged 3 days ago
-- Reality: Nobody updated Jira
+- Jira says "In Progress" - but the PR merged 3 days ago
+- Linear tracks human tasks - but AI did the work
+- Notion documents process - but doesn't run it
 
-**GitBoard solves this** by making git the single source of truth. AI agents (like Claude Code) can read and update tickets directly, keeping project state in sync with code reality.
+**GitBoard is different:**
+
+- Project state lives IN git, not beside it
+- AI agents read and update tickets directly
+- Artifacts are generated at each phase
+- Humans review at quality gates
+- Everything is version controlled
 
 ## Features
 
-- **Git-native** - All project state lives in `.gitboard/data/`
+- **Git-native** - All project state lives in `.gitboard/data/`, versioned with your work
+- **AI-native** - Agents work tickets, generate artifacts, update status automatically
+- **Phase-based artifacts** - Each status column produces outputs for the next phase
+- **Human-in-the-loop** - Quality gates where humans review before advancing
 - **Local-first** - Works offline, no external dependencies
-- **AI-native** - Claude Code integration with real-time status updates
-- **Kanban board** - Drag-and-drop ticket management
+- **Kanban board** - Drag-and-drop with custom columns per workflow
 - **Documentation** - Markdown docs with image support
-- **MCP integration** - Configure Model Context Protocol servers
-- **Team management** - Track team members and AI agents
 - **Zero infrastructure** - No servers, no databases to manage
+
+## Use Cases
+
+GitBoard isn't just for developers. Any team with a workflow can use it.
+
+| Team | Example Pipeline |
+|------|------------------|
+| **Software** | Spec → Code → Review → Test → Deploy |
+| **Marketing** | Research → Draft → SEO → Design → Publish |
+| **Content** | Idea → Outline → Write → Edit → Schedule |
+| **Design** | Brief → Concept → Wireframe → Design → Handoff |
+| **Legal** | Draft → Review → Revise → Approve → Execute |
+| **Video** | Script → Storyboard → Film → Edit → Publish |
+| **Sales** | Lead → Qualify → Propose → Negotiate → Close |
+
+Each column can have:
+- An **AI agent** assigned to do the work
+- **Artifact templates** defining expected outputs
+- **Acceptance criteria** for human review
 
 ## Installation
 
@@ -254,30 +301,30 @@ sed -i '' '/^\.gitboard\/$/d' .gitignore
 
 ## Comparison
 
-| Feature | GitBoard | Jira | Linear | GitHub Projects |
-|---------|----------|------|--------|-----------------|
-| Git-native | Yes | No | No | Linked |
-| Local-first | Yes | No | No | No |
-| Works offline | Yes | No | No | No |
-| Own your data | Yes | No | No | No |
-| AI-native | Yes | Plugin | Plugin | No |
-| Zero infrastructure | Yes | No | No | No |
+| Aspect | GitBoard | Jira/Linear | n8n/Zapier | VibeKanban |
+|--------|----------|-------------|------------|------------|
+| **Model** | AI production line | Human task tracking | Workflow automation | Agent orchestration |
+| **Data lives in** | Git (yours) | Their cloud | Their cloud | App state |
+| **AI role** | Does the work | Tracks work | Connects tools | Runs code |
+| **Human role** | Quality gates | Does the work | Builds flows | Reviews code |
+| **Artifacts** | Generated per phase | Attachments | Outputs | Diffs |
+| **Works offline** | Yes | No | No | Partial |
+| **Non-dev teams** | Yes | Yes | Yes | No |
 
-## Use Cases
+## Who It's For
 
 ### Great For
 
-- Developer-led teams
-- AI-assisted development with Claude Code
-- Open source projects
-- Teams that live in git
-- Privacy-conscious teams
+- **Any team with a workflow** - content, design, legal, sales, not just dev
+- **AI-assisted production** - where AI does work and humans review
+- **Teams that want version history** - every change tracked
+- **Privacy-conscious teams** - your data stays in your repo
+- **Solo creators** - one person supervising multiple AI agents
 
 ### Not Ideal For
 
-- Non-technical stakeholders
-- Large enterprises needing audit trails
-- Teams requiring real-time collaboration
+- Teams that don't use git at all
+- Workflows requiring real-time multi-user editing (yet - Supabase integration planned)
 
 ## Roadmap
 
