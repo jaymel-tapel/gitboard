@@ -122,8 +122,15 @@ else
     if [ -z "$PROJECT_NAME" ]; then
         # Try to get default from target directory name
         DEFAULT_NAME="$(basename "$TARGET")"
-        read -p "Project name [$DEFAULT_NAME]: " PROJECT_NAME
-        PROJECT_NAME="${PROJECT_NAME:-$DEFAULT_NAME}"
+        if [ -t 0 ]; then
+            # Interactive mode - prompt user
+            read -p "Project name [$DEFAULT_NAME]: " PROJECT_NAME
+            PROJECT_NAME="${PROJECT_NAME:-$DEFAULT_NAME}"
+        else
+            # Non-interactive mode (piped) - use default
+            PROJECT_NAME="$DEFAULT_NAME"
+            echo -e "${YELLOW}Using project name: $PROJECT_NAME (use --name to override)${NC}"
+        fi
     fi
 
     # Prompt for ticket code if not provided
@@ -133,8 +140,15 @@ else
         if [ ${#DEFAULT_CODE} -lt 2 ]; then
             DEFAULT_CODE="TASK"
         fi
-        read -p "Ticket code prefix [$DEFAULT_CODE]: " TICKET_CODE
-        TICKET_CODE="${TICKET_CODE:-$DEFAULT_CODE}"
+        if [ -t 0 ]; then
+            # Interactive mode - prompt user
+            read -p "Ticket code prefix [$DEFAULT_CODE]: " TICKET_CODE
+            TICKET_CODE="${TICKET_CODE:-$DEFAULT_CODE}"
+        else
+            # Non-interactive mode (piped) - use default
+            TICKET_CODE="$DEFAULT_CODE"
+            echo -e "${YELLOW}Using ticket code: $TICKET_CODE (use --code to override)${NC}"
+        fi
     fi
 
     # Validate ticket code (uppercase letters only, 2-6 chars)
