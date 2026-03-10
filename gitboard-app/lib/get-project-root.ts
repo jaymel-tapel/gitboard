@@ -22,11 +22,8 @@ export function getProjectRoot(): string {
 
     // Detect standalone mode: running from .gitboard/app/
     if (cwdName === 'app' && parentName === '.gitboard') {
-        const dataPath = join(parentDir, 'data');
-        if (existsSync(dataPath)) {
-            // Return the project root (parent of .gitboard/)
-            return dirname(parentDir);
-        }
+        // Return the project root (parent of .gitboard/)
+        return dirname(parentDir);
     }
 
     // Default to cwd (dev mode)
@@ -42,12 +39,7 @@ export function isStandaloneMode(): boolean {
     const parentName = basename(parentDir);
     const cwdName = basename(cwd);
 
-    if (cwdName === 'app' && parentName === '.gitboard') {
-        const dataPath = join(parentDir, 'data');
-        return existsSync(dataPath);
-    }
-
-    return false;
+    return cwdName === 'app' && parentName === '.gitboard';
 }
 
 /**
