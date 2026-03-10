@@ -279,6 +279,50 @@ sed -i '' '/^\.gitboard\/$/d' .gitignore
 - Large enterprises needing audit trails
 - Teams requiring real-time collaboration
 
+## Roadmap
+
+### In Progress
+
+| Feature | Description |
+|---------|-------------|
+| **Ticket Comments** | Threaded discussions on tickets, synced via git |
+| **Background Execution** | Run AI agents in background with progress tracking |
+| **Team Chat** | Real-time team communication per board/ticket |
+
+### Planned
+
+| Feature | Description |
+|---------|-------------|
+| **GitHub/GitLab Sync** | Two-way sync with GitHub Issues and GitLab Issues |
+| **PR Integration** | Auto-link tickets to pull requests, update status on merge |
+| **Notifications** | Desktop/browser notifications for ticket updates |
+| **Time Tracking** | Track time spent on tickets with start/stop timer |
+| **Search & Filtering** | Full-text search across tickets, docs, and chat |
+| **Ticket Templates** | Predefined templates for bugs, features, tasks |
+| **Custom Fields** | User-defined fields per ticket type |
+| **Automations** | Rule-based actions (e.g., auto-assign, auto-move) |
+| **Webhooks** | HTTP callbacks for external integrations |
+| **Reports & Analytics** | Velocity charts, burndown, cycle time metrics |
+
+### Future
+
+| Feature | Description |
+|---------|-------------|
+| **Mobile App** | iOS/Android companion app |
+| **Multi-Project Dashboard** | Unified view across multiple GitBoard projects |
+| **Offline Sync** | Conflict resolution for offline changes |
+| **Plugin System** | Extensible architecture for custom integrations |
+| **Voice Notes** | Audio attachments on tickets |
+| **AI Summaries** | Auto-generated ticket and sprint summaries |
+| **Calendar View** | Due date visualization and scheduling |
+| **Dependency Tracking** | Ticket blocking/blocked-by relationships |
+| **Recurring Tickets** | Auto-create tickets on schedule |
+| **Guest Access** | Share read-only views without git access |
+
+### Contributing
+
+We welcome contributions! Check the issues for `good first issue` labels or propose new features.
+
 ## Development
 
 ```bash
