@@ -293,6 +293,7 @@ sed -i '' '/^\.gitboard\/$/d' .gitignore
 
 | Feature | Description |
 |---------|-------------|
+| **Supabase Integration** | Optional real-time layer for team auth, chat, and presence (free tier) |
 | **GitHub/GitLab Sync** | Two-way sync with GitHub Issues and GitLab Issues |
 | **PR Integration** | Auto-link tickets to pull requests, update status on merge |
 | **Notifications** | Desktop/browser notifications for ticket updates |
