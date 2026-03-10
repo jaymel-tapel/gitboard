@@ -55,14 +55,8 @@ const isStandaloneMode = (() => {
     const parentName = path.basename(parentDir);
     const cwdName = path.basename(cwd);
 
-    // Check if we're in .gitboard/app/ with data/ sibling
-    if (cwdName === 'app' && parentName === '.gitboard') {
-        const dataPath = path.join(parentDir, 'data');
-        if (fs.existsSync(dataPath)) {
-            return true;
-        }
-    }
-    return false;
+    // Check if we're in .gitboard/app/
+    return cwdName === 'app' && parentName === '.gitboard';
 })();
 
 console.log(`🔧 Server mode: ${isStandaloneMode ? 'STANDALONE' : 'DEVELOPMENT'}`);
@@ -229,14 +223,13 @@ function detectStandaloneMode() {
 
     // If current dir is 'app' and parent is '.gitboard', we're in standalone mode
     if (cwdName === 'app' && parentName === '.gitboard') {
+        const projectRoot = path.dirname(parentDir);
         const dataPath = path.join(parentDir, 'data');
-        if (fs.existsSync(dataPath)) {
-            return {
-                isStandalone: true,
-                projectRoot: path.dirname(parentDir),
-                dataPath: dataPath
-            };
-        }
+        return {
+            isStandalone: true,
+            projectRoot: projectRoot,
+            dataPath: dataPath
+        };
     }
     return { isStandalone: false };
 }
