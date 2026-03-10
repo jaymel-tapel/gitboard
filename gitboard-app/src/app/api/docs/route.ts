@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { FileSystemManager } from '@/lib/file-system';
 import { getProjectRoot } from '@/lib/get-project-root';
 
+// Force dynamic rendering - this route depends on runtime environment
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const repoPath = getProjectRoot();
