@@ -4,9 +4,12 @@
 # Install GitBoard to any project directly from GitHub
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash -s -- /path/to/project
+#   curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash -s -- [path] [options]
 #
-# Options (pass after --):
+# If no path is provided, installs to current directory.
+#
+# Options:
 #   --update          Update existing installation (preserve data)
 #   --personal        Add .gitboard/ to .gitignore
 #   --shared          Keep .gitboard/ tracked by git (default)
@@ -35,31 +38,14 @@ echo -e "${BLUE}    GitBoard Remote Installer${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
-# Check for target directory
+# Determine target directory
 if [ -z "$1" ] || [[ "$1" == -* ]]; then
-    echo -e "${RED}Error: Target directory is required${NC}"
-    echo ""
-    echo "Usage:"
-    echo "  curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash -s -- /path/to/project [options]"
-    echo ""
-    echo "Options:"
-    echo "  --update          Update existing installation (preserve data)"
-    echo "  --personal        Add .gitboard/ to .gitignore"
-    echo "  --shared          Keep .gitboard/ tracked by git (default)"
-    echo "  --name \"Name\"     Project name"
-    echo "  --code CODE       Ticket code prefix (e.g., PROJ)"
-    echo ""
-    echo "Examples:"
-    echo "  # Fresh install"
-    echo "  curl -fsSL .../install.sh | bash -s -- /path/to/my-project"
-    echo ""
-    echo "  # Update existing"
-    echo "  curl -fsSL .../install.sh | bash -s -- /path/to/my-project --update"
-    exit 1
+    # No path provided or first arg is an option - use current directory
+    TARGET="$(pwd)"
+else
+    TARGET="$1"
+    shift
 fi
-
-TARGET="$1"
-shift
 
 # Resolve target to absolute path
 TARGET="$(cd "$TARGET" 2>/dev/null && pwd)" || {
