@@ -27,24 +27,71 @@ Traditional PM tools (Jira, Linear, Asana) have a fundamental problem: **they're
 
 ## Installation
 
-Install GitBoard into any project:
+### Quick Install (Remote)
+
+Install GitBoard directly from GitHub into your current directory:
 
 ```bash
-# From the gitboard-app directory
-./scripts/install.sh /path/to/your-project
-
-# With options
-./scripts/install.sh /path/to/your-project --name "My Project" --code "PROJ"
+curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash
 ```
 
-### Options
+Or specify a target directory:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash -s -- /path/to/project
+```
+
+With custom project name and ticket code:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash -s -- --name "My Project" --code "PROJ"
+```
+
+### Update Existing Installation
+
+Update GitBoard while preserving your data:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jaymel-tapel/gitboard/main/install.sh | bash -s -- --update
+```
+
+### Local Installation (Development)
+
+If you've cloned the repository:
+
+```bash
+cd gitboard/gitboard-app
+./scripts/install.sh /path/to/your-project
+```
+
+### Installation Options
 
 | Flag | Description |
 |------|-------------|
-| `--name "Name"` | Project name (prompts if not provided) |
-| `--code CODE` | Ticket prefix, e.g., `PROJ` for PROJ-0001 |
+| `--update` | Update app only, preserve existing data |
+| `--name "Name"` | Project name (auto-detected from directory if not provided) |
+| `--code CODE` | Ticket prefix, e.g., `PROJ` for PROJ-0001 (derived from name if not provided) |
 | `--personal` | Add `.gitboard/` to `.gitignore` (not shared with team) |
 | `--shared` | Track `.gitboard/` in git (default, shared with team) |
+
+### Examples
+
+```bash
+# Install in current directory with defaults
+curl -fsSL .../install.sh | bash
+
+# Install with custom settings
+curl -fsSL .../install.sh | bash -s -- --name "Acme Corp" --code "ACME" --personal
+
+# Install to specific path
+curl -fsSL .../install.sh | bash -s -- /path/to/project --name "My App" --code "APP"
+
+# Update existing installation
+curl -fsSL .../install.sh | bash -s -- --update
+
+# Update specific project
+curl -fsSL .../install.sh | bash -s -- /path/to/project --update
+```
 
 ## Quick Start
 
@@ -236,7 +283,7 @@ sed -i '' '/^\.gitboard\/$/d' .gitignore
 
 ```bash
 # Clone repo
-git clone https://github.com/anthropics/gitboard.git
+git clone https://github.com/jaymel-tapel/gitboard.git
 cd gitboard/gitboard-app
 
 # Install dependencies
@@ -255,4 +302,4 @@ MIT
 
 ---
 
-**Questions?** Open an issue at [github.com/anthropics/gitboard](https://github.com/anthropics/gitboard)
+**Questions?** Open an issue at [github.com/jaymel-tapel/gitboard](https://github.com/jaymel-tapel/gitboard)
