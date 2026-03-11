@@ -1,0 +1,22 @@
+{
+  "ticketId": "PM-0141",
+  "messages": [
+    {
+      "id": "26953b7b-d0a1-4abd-91ab-d131467576fc",
+      "role": "user",
+      "content": "Sometimes the app crashes. Here's the last logs\n\n🛑 Killed PTY for FF-0022\nPTY for FF-0022 exited with code 0\nShell exited with code 0\n👋 Client disconnected: 134wQzcqEuPgpDaFAAAb\n/Users/jaymel/Desktop/fogo-farm/.gitboard/app/node_modules/@homebridge/node-pty-prebuilt-multiarch/lib/unixTerminal.js:267\n        prebuild_loader_1.default.resize(this._fd, cols, rows);\n                                  ^\n\nError: ioctl(2) failed, EBADF\n    at UnixTerminal.resize (/Users/jaymel/Desktop/fogo-farm/.gitboard/app/node_modules/@homebridge/node-pty-prebuilt-multiarch/lib/unixTerminal.js:267:35)\n    at Socket.<anonymous> (/Users/jaymel/Desktop/fogo-farm/.gitboard/app/server.cjs:850:84)\n    at Socket.emit (node:events:508:28)\n    at Socket.emitUntyped (/Users/jaymel/Desktop/fogo-farm/.gitboard/app/node_modules/socket.io/dist/typed-events.js:69:22)\n    at /Users/jaymel/Desktop/fogo-farm/.gitboard/app/node_modules/socket.io/dist/socket.js:697:39\n    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)\n\nNode.js v24.13.0",
+      "timestamp": "2026-03-11T19:52:20.854Z"
+    },
+    {
+      "id": "58cb8ed8-8275-4134-b3fb-fbec113ae4aa",
+      "role": "assistant",
+      "content": "I've found the root cause of the crash. Here's what's happening:\n\nThe issue is a race condition in the PTY terminal handling. When a PTY process exits (like when the shell session ends), the server does clean up by deleting the process from ptyProcesses and disconnecting sockets. However, there's a timing issue.\n\nThe problem is on line 850 and 943 where the socket listens for resize events. When a resize event comes in after the PTY has already exited (but before the socket fully disconnects), the code tries to call ptyProcess.resize() on a PTY that's already been destroyed. This causes the EBADF error, which means \"bad file descriptor\" since the underlying file descriptor for the terminal has been closed.\n\nLooking at the sequence in your logs:\n1. \"Killed PTY for FF-0022\" - PTY was terminated\n2. \"PTY for FF-0022 exited with code 0\" - exit handler ran\n3. \"Shell exited with code 0\" - another exit notification\n4. \"Client disconnected\" - socket disconnecting\n5. Then the crash happens when a resize event comes in during this disconnect window\n\nThe fix needs to check if the PTY is still valid before calling resize, or remove the resize listener when the PTY exits.\n\nI have enough information to create the ticket now. This is a clear bug with a well-defined fix.",
+      "timestamp": "2026-03-11T19:53:01.052Z",
+      "artifactId": "45abe1f5-5569-4e7d-957e-145e0761d25e"
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-03-11T19:54:20.862Z",
+    "updated_at": "2026-03-11T19:54:20.862Z"
+  }
+}
