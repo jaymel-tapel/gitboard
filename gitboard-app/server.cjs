@@ -6,6 +6,18 @@ const path = require('path');
 const fs = require('fs');
 const { execSync, exec } = require('child_process');
 
+// Load .env file manually (before any env vars are used)
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+    fs.readFileSync(envPath, 'utf-8').split('\n').forEach(line => {
+        const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+        if (match && !line.startsWith('#') && !process.env[match[1]]) {
+            process.env[match[1]] = (match[2] || '').replace(/^['"]|['"]$/g, '');
+        }
+    });
+    console.log('✅ Loaded .env file');
+}
+
 // Node v24 compatibility: Patch console.error to safely handle error objects
 // Node v24's util.inspect crashes on certain error objects with undefined property descriptors
 const originalConsoleError = console.error;
