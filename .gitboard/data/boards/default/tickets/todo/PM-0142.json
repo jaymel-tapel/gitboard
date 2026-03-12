@@ -1,0 +1,98 @@
+{
+  "id": "PM-0142",
+  "title": "Auto-repair malformed ticket data during read",
+  "description": "## Problem Overview\r\n\r\nThe AgentLauncher intermittently fails on its first startup attempt but succeeds on retry. Investigation has traced this to a ZodError occurring when reading ticket data from the filesystem. The specific case involves ticket DB-0041, which contains malformed `acceptance_criteria` and `implementation_steps` arrays where items are objects with only `{completed: boolean}` but missing the required `text` property.\r\n\r\n## Root Cause Analysis\r\n\r\nThe ticket data schema in `schemas.ts` (lines 26-40) defines `ChecklistItemSchema` to accept either a plain string OR an object with `{text: string, completed: boolean}`. The `readTicket` method in `ticketFileStore.ts` (lines 61-78) parses the JSON file and immediately validates against the Zod schema. When any ticket fails validation, the entire board load fails, cascading to the AgentLauncher receiving an undefined ticketId.\r\n\r\nThis is a data integrity issue where legacy or corrupted ticket files can break the entire application. The validation is too strict without any recovery mechanism, making the system fragile to minor data corruption.\r\n\r\n## Proposed Solution\r\n\r\nImplement a data normalization/repair layer that executes BEFORE Zod validation in the `readTicket` method. This pre-validation repair should silently fix common data issues without user intervention. The normalization should handle: (1) objects missing the `text` property by adding placeholder text like '[Missing text]', (2) null/undefined array items by filtering them out, and (3) any other edge cases that could cause Zod parsing to fail for these specific fields.\r\n\r\n## Implementation Approach\r\n\r\nCreate a helper function (e.g., `normalizeTicketData`) that takes raw parsed JSON and returns normalized data conforming to the schema. This function should be called immediately after `JSON.parse()` but before `TicketSchema.parse()`. The repair should be defensive and handle edge cases gracefully - if an item cannot be repaired, it should be filtered out rather than causing a crash. Logging can be added for debugging purposes but should not surface to users.\r\n\r\n## Impact\r\n\r\nThis fix prevents a single malformed ticket from breaking the entire board loading mechanism. It improves system resilience and provides a better user experience by gracefully handling data corruption. The silent repair approach means users won't be interrupted while maintaining data integrity going forward.",
+  "priority": "medium",
+  "tags": [],
+  "acceptance_criteria": [
+    {
+      "text": "The `readTicket` method successfully parses ticket files where `acceptance_criteria` items are objects with `{completed: boolean}` but no `text` property",
+      "completed": false
+    },
+    {
+      "text": "The `readTicket` method successfully parses ticket files where `implementation_steps` items are objects with `{completed: boolean}` but no `text` property",
+      "completed": false
+    },
+    {
+      "text": "Malformed checklist items without `text` property are repaired by adding `text: '[Missing text]'` (or similar placeholder)",
+      "completed": false
+    },
+    {
+      "text": "Null or undefined items in `acceptance_criteria` and `implementation_steps` arrays are filtered out silently",
+      "completed": false
+    },
+    {
+      "text": "The board page loads successfully via `/api/board/tickets` even when one or more tickets have malformed checklist data",
+      "completed": false
+    },
+    {
+      "text": "The AgentLauncher no longer fails on first attempt due to ZodError from malformed ticket data",
+      "completed": false
+    },
+    {
+      "text": "Valid ticket data (strings or properly formatted objects) passes through normalization unchanged",
+      "completed": false
+    },
+    {
+      "text": "The data repair/normalization is silent - no user-facing errors or notifications are shown",
+      "completed": false
+    },
+    {
+      "text": "Unit tests exist for the normalization helper functions covering all edge cases",
+      "completed": false
+    },
+    {
+      "text": "Integration test exists verifying malformed ticket files can be read successfully",
+      "completed": false
+    }
+  ],
+  "implementation_steps": [
+    {
+      "text": "Create a `normalizeChecklistItem` helper function in ticketFileStore.ts that takes a raw checklist item and returns a properly formatted item: if it's a string, return it as-is; if it's an object with `text`, return it; if it's an object without `text` but with `completed`, add `text: '[Missing text]'`; if it's null/undefined, return null to signal filtering",
+      "completed": false
+    },
+    {
+      "text": "Create a `normalizeTicketData` helper function that takes raw parsed JSON ticket data and normalizes the `acceptance_criteria` and `implementation_steps` arrays by mapping through items with `normalizeChecklistItem` and filtering out null results",
+      "completed": false
+    },
+    {
+      "text": "Modify the `readTicket` method (lines 61-78) to call `normalizeTicketData` on the parsed JSON immediately after `JSON.parse()` and before `TicketSchema.parse()`",
+      "completed": false
+    },
+    {
+      "text": "Add optional debug logging (controlled by environment variable or config) to track when repairs are made, useful for identifying recurring data issues",
+      "completed": false
+    },
+    {
+      "text": "Write unit tests for `normalizeChecklistItem` covering: valid string items, valid object items with text+completed, objects with only completed (no text), null items, undefined items, and empty objects",
+      "completed": false
+    },
+    {
+      "text": "Write unit tests for `normalizeTicketData` covering: tickets with mixed valid/invalid items in both arrays, tickets with empty arrays, and tickets with entirely malformed arrays",
+      "completed": false
+    },
+    {
+      "text": "Write an integration test that creates a ticket file with malformed data (mimicking DB-0041's structure) and verifies that `readTicket` successfully parses and returns normalized data without throwing",
+      "completed": false
+    },
+    {
+      "text": "Test the fix manually by corrupting a test ticket's acceptance_criteria/implementation_steps and verifying the board loads successfully",
+      "completed": false
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-03-12T13:16:07.330Z",
+    "updated_at": "2026-03-12T13:16:07.330Z",
+    "created_by": "GitBoard User",
+    "updated_by": "GitBoard User",
+    "position": -1
+  },
+  "links": {
+    "related_tickets": [],
+    "blocks": [],
+    "blocked_by": [],
+    "pull_requests": [],
+    "github_issues": []
+  },
+  "custom_fields": {}
+}
