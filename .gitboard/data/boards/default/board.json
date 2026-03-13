@@ -18,23 +18,16 @@
       "autoExecute": false
     },
     {
-      "id": "deployment",
-      "name": "Deployment",
-      "order": 2,
-      "color": "gray",
-      "autoExecute": false
-    },
-    {
       "id": "add-to-changelog",
       "name": "Add to Changelog",
-      "order": 3,
+      "order": 2,
       "color": "gray",
       "autoExecute": false
     },
     {
       "id": "done",
       "name": "Done",
-      "order": 4,
+      "order": 3,
       "color": "green",
       "autoExecute": false
     }
