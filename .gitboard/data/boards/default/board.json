@@ -18,17 +18,17 @@
       "autoExecute": false
     },
     {
-      "id": "done",
-      "name": "Done",
+      "id": "review",
+      "name": "Review",
       "order": 2,
-      "color": "green",
+      "color": "gray",
       "autoExecute": false
     },
     {
-      "id": "review",
-      "name": "Review",
+      "id": "done",
+      "name": "Done",
       "order": 3,
-      "color": "gray",
+      "color": "green",
       "autoExecute": false
     }
   ],
