@@ -2,6 +2,7 @@
   "id": "PM-0145",
   "title": "Fix agent launcher to always find ticket files from root repo",
   "description": "When launching an agent for a brand new ticket that doesn't have a worktree yet, the first 'Start' attempt fails but subsequent attempts succeed. This issue occurs because the `findTicketFile` function in `server.cjs` (lines 469-564) searches for ticket files using the `basePath` parameter, and the agent launch logic (lines 1117-1122) first tries the `repoPath` and then falls back to `worktreePath` if not found.\n\nThe root cause is a timing and synchronization issue. When `setupWorktreeForTicket` (lines 178-216) creates a new worktree for a brand new ticket, the worktree is created from the base branch (e.g., `main`). However, the ticket JSON file exists only in the root repository's `.gitboard/data/tickets/` directory structure. The worktree, being a fresh checkout of the base branch, does not contain this ticket file because the ticket was just created and hasn't been committed to the branch yet. The current fallback logic at lines 1119-1122 attempts to find the ticket in the worktree, which fails for brand new tickets.\n\nThe solution requires implementing a clear separation of concerns: ticket files should ALWAYS be read from the root repository (`repoPath`), while the worktree should only be used as the workspace for code operations. The current code at lines 1117-1122 has the right idea (try repoPath first), but the issue is that for completely new tickets, the file might not be immediately accessible due to file system timing or the search might fail for other reasons. The fix should remove the fallback to `worktreePath` entirely for ticket file resolution, ensuring that `findTicketFile` is only ever called with `repoPath`.\n\nAdditionally, the `ticketFilePath` stored in the context (line 1131) should always point to the root repository's ticket file location, not a worktree path. This ensures consistency and prevents confusion when the agent tries to read or update the ticket file during execution. The working directory for the agent's code operations should remain the worktree (`workingDirectory` at line 764-782), maintaining the correct separation between ticket metadata storage (root repo) and code workspace (worktree).\n\nThis fix aligns with the architectural principle that `.gitboard/data/` is the canonical source of truth for all ticket data, while worktrees are ephemeral workspaces for isolated code changes on feature branches.",
+  "owner": "",
   "priority": "medium",
   "tags": [],
   "acceptance_criteria": [
@@ -56,12 +57,13 @@
       "completed": false
     }
   ],
+  "notes": "",
   "metadata": {
     "created_at": "2026-03-17T10:15:26.989Z",
-    "updated_at": "2026-03-17T10:22:00.017Z",
+    "updated_at": "2026-03-17T10:22:11.356Z",
     "created_by": "GitBoard User",
     "updated_by": "GitBoard User",
-    "position": -4
+    "position": 0
   },
   "links": {
     "related_tickets": [],
@@ -70,7 +72,5 @@
     "pull_requests": [],
     "github_issues": []
   },
-  "custom_fields": {},
-  "owner": "",
-  "notes": ""
+  "custom_fields": {}
 }
