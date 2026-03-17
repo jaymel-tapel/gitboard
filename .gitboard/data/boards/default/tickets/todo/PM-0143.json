@@ -1,0 +1,24 @@
+{
+  "id": "PM-0143",
+  "title": "Supabase Integration",
+  "description": "",
+  "priority": "medium",
+  "tags": [],
+  "acceptance_criteria": [],
+  "implementation_steps": [],
+  "metadata": {
+    "created_at": "2026-03-17T10:14:05.647Z",
+    "updated_at": "2026-03-17T10:14:05.647Z",
+    "created_by": "GitBoard User",
+    "updated_by": "GitBoard User",
+    "position": -2
+  },
+  "links": {
+    "related_tickets": [],
+    "blocks": [],
+    "blocked_by": [],
+    "pull_requests": [],
+    "github_issues": []
+  },
+  "custom_fields": {}
+}

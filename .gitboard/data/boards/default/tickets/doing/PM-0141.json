@@ -1,0 +1,66 @@
+{
+  "id": "PM-0141",
+  "title": "Fix PTY resize crash when terminal session ends",
+  "description": "The GitBoard application experiences a server crash when terminal resize events are received after a PTY (pseudo-terminal) process has already exited. This manifests as an 'Error: ioctl(2) failed, EBADF' error, where EBADF indicates an attempt to perform an operation on an invalid file descriptor. The crash is caused by a race condition in the socket event handling logic in server.cjs.\r\n\r\nThe root cause is that the socket 'resize' event listeners call `ptyProcess.resize(cols, rows)` without first verifying that the PTY process is still valid. When a PTY exits, its file descriptor is closed and the process is removed from the `ptyProcesses` Map. However, the socket may still receive resize events during the brief window between the PTY exit and full socket disconnection. The crash sequence is: PTY killed → PTY exit handler runs (deletes from ptyProcesses Map, calls socket.disconnect()) → socket starts disconnecting → resize event arrives → ptyProcess.resize() called on dead PTY → EBADF error crashes the server.\r\n\r\nThere are three separate resize handlers that need to be fixed in server.cjs: (1) Line 862 - reconnection to existing PTY session for resume flow, (2) Line 955 - new PTY creation for resume flow, and (3) Lines 1520-1522 - new PTY creation for fresh sessions. Each of these handlers directly calls `ptyProcess.resize()` without any validity checks.\r\n\r\nThe recommended fix approach is two-fold: First, add a validity check before each resize call by verifying the PTY still exists in the `ptyProcesses` Map using `ptyProcesses.has(ticketId)`. Second, wrap the resize call in a try-catch block as a safety net to handle any edge cases where the PTY might become invalid between the check and the resize call. This defensive programming approach ensures graceful degradation rather than server crashes.\r\n\r\nFor the handlers that use `processData.ptyProcess` (lines 862 and 955), the check should verify the processData is still valid. For line 1521 which uses a local `ptyProcess` variable, the check should verify against the `ptyProcesses` Map to confirm the process hasn't been cleaned up. Any caught errors should be logged at debug level for troubleshooting but should not crash the server or emit errors to the client.",
+  "priority": "medium",
+  "tags": [],
+  "acceptance_criteria": [
+    {
+      "text": "Server does not crash when terminal resize events are received after PTY process has exited",
+      "completed": false
+    },
+    {
+      "text": "Normal terminal resize functionality continues to work correctly during active PTY sessions",
+      "completed": false
+    },
+    {
+      "text": "Errors from resize attempts on dead PTY processes are caught and logged at debug level without emitting to client",
+      "completed": false
+    },
+    {
+      "text": "All three resize handlers (lines 862, 955, 1520-1522) are protected with validity checks and try-catch blocks",
+      "completed": false
+    },
+    {
+      "text": "The ptyProcesses Map check is performed before each resize attempt to verify PTY still exists",
+      "completed": false
+    }
+  ],
+  "implementation_steps": [
+    {
+      "text": "Create a helper function `safeResize(ticketId, ptyProcess, cols, rows)` at the top of server.cjs (near line 223 where ptyProcesses is defined) that checks if the PTY exists in ptyProcesses Map, wraps the resize call in try-catch, and logs any errors at debug level",
+      "completed": false
+    },
+    {
+      "text": "Update line 862 resize handler to use the safe resize pattern: check if ptyProcesses.has(ticketId) before calling processData.ptyProcess.resize(), wrap in try-catch",
+      "completed": false
+    },
+    {
+      "text": "Update line 955 resize handler to use the safe resize pattern: check if ptyProcesses.has(ticketId) before calling ptyProcess.resize(), wrap in try-catch",
+      "completed": false
+    },
+    {
+      "text": "Update lines 1520-1522 resize handler to use the safe resize pattern: check if ptyProcesses.has(ticketId) before calling ptyProcess.resize(), wrap in try-catch",
+      "completed": false
+    },
+    {
+      "text": "Test by manually triggering resize events after PTY exit - verify no crash occurs and resize works normally during active sessions",
+      "completed": false
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-03-11T19:54:20.747Z",
+    "updated_at": "2026-03-13T11:09:46.433Z",
+    "created_by": "GitBoard User",
+    "updated_by": "GitBoard User",
+    "position": 0
+  },
+  "links": {
+    "related_tickets": [],
+    "blocks": [],
+    "blocked_by": [],
+    "pull_requests": [],
+    "github_issues": []
+  },
+  "custom_fields": {}
+}
