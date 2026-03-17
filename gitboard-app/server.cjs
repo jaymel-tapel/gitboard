@@ -866,12 +866,9 @@ app.prepare().then(() => {
 
                         let context = '';
                         if (ticketResult) {
-                            const relativePath = ticketResult.boardId
-                                ? path.join('gitboard', 'boards', ticketResult.boardId, 'tickets', ticketResult.status, `${ticketId}.json`)
-                                : path.join('gitboard', 'tickets', ticketResult.status, `${ticketId}.json`);
-                            const ticketFilePath = createNewBranch
-                                ? path.join(worktreePath, relativePath)
-                                : ticketResult.filePath;
+                            // ARCHITECTURAL DECISION: Always use root repo path for ticket files.
+                            // Worktrees are for code changes only; ticket files live in the root repo.
+                            const ticketFilePath = ticketResult.filePath;
 
                             if (createNewBranch) {
                                 context = `You are working on ticket ${ticketId}.\n\nTicket file: ${ticketFilePath}\n\nYou are working in an isolated git worktree on branch '${ticketId}'.\nAll changes you make will be on this feature branch, not on main.\n\nInstructions:\n1. Read the ticket file to understand the task\n2. Complete the work described in the ticket\n3. Commit your changes to this feature branch\n\nWorking directory: ${workingDirectory}\nBranch: ${ticketId}\n\nPlease start working on this task.`;
@@ -959,12 +956,9 @@ app.prepare().then(() => {
 
                     let context = '';
                     if (ticketResult) {
-                        const relativePath = ticketResult.boardId
-                            ? path.join('gitboard', 'boards', ticketResult.boardId, 'tickets', ticketResult.status, `${ticketId}.json`)
-                            : path.join('gitboard', 'tickets', ticketResult.status, `${ticketId}.json`);
-                        const ticketFilePath = createNewBranch
-                            ? path.join(worktreePath, relativePath)
-                            : ticketResult.filePath;
+                        // ARCHITECTURAL DECISION: Always use root repo path for ticket files.
+                        // Worktrees are for code changes only; ticket files live in the root repo.
+                        const ticketFilePath = ticketResult.filePath;
 
                         if (createNewBranch) {
                             context = `You are working on ticket ${ticketId}.\n\nTicket file: ${ticketFilePath}\n\nYou are working in an isolated git worktree on branch '${ticketId}'.\nAll changes you make will be on this feature branch, not on main.\n\nInstructions:\n1. Read the ticket file to understand the task\n2. Complete the work described in the ticket\n3. Commit your changes to this feature branch\n\nWorking directory: ${workingDirectory}\nBranch: ${ticketId}\n\nPlease start working on this task.`;
@@ -1102,17 +1096,19 @@ app.prepare().then(() => {
                 console.log(`📋 repoPath: ${repoPath}`);
                 console.log(`📋 worktreePath: ${worktreePath || '(none)'}`);
 
-                // Find ticket across boards - try main repo first, then worktree
-                let ticketResult = findTicketFile(repoPath, ticketId);
-                if (!ticketResult && worktreePath) {
-                    console.log(`📋 Ticket not found in repoPath, trying worktreePath...`);
-                    ticketResult = findTicketFile(worktreePath, ticketId);
-                }
+                // ARCHITECTURAL DECISION: Ticket files are ALWAYS resolved from the root repository (repoPath).
+                // The .gitboard/data/ directory in the root repo is the canonical source of truth for all ticket data.
+                // Worktrees are ephemeral workspaces for isolated code changes on feature branches, and should NOT
+                // be used for ticket file resolution. This ensures that:
+                // 1. Brand new tickets work on first agent launch attempt (no retry needed)
+                // 2. Ticket updates are always written to the root repo, visible across all worktrees
+                // 3. Clear separation of concerns: ticket metadata (root repo) vs code workspace (worktree)
+                const ticketResult = findTicketFile(repoPath, ticketId);
 
                 if (ticketResult) {
                     console.log(`📋 ✅ Ticket found: filePath=${ticketResult.filePath}, status=${ticketResult.status}, boardId=${ticketResult.boardId || '(legacy)'}`);
                 } else {
-                    console.warn(`📋 ❌ Ticket ${ticketId} not found in repoPath (${repoPath})${worktreePath ? ` or worktreePath (${worktreePath})` : ''}`);
+                    console.warn(`📋 ❌ Ticket ${ticketId} not found in root repository (${repoPath})`);
                 }
 
                 if (ticketResult) {
@@ -1478,12 +1474,9 @@ app.prepare().then(() => {
 
                     let context = '';
                     if (ticketResult) {
-                        const relativePath = ticketResult.boardId
-                            ? path.join('gitboard', 'boards', ticketResult.boardId, 'tickets', ticketResult.status, `${ticketId}.json`)
-                            : path.join('gitboard', 'tickets', ticketResult.status, `${ticketId}.json`);
-                        const ticketFilePath = createNewBranch
-                            ? path.join(worktreePath, relativePath)
-                            : ticketResult.filePath;
+                        // ARCHITECTURAL DECISION: Always use root repo path for ticket files.
+                        // Worktrees are for code changes only; ticket files live in the root repo.
+                        const ticketFilePath = ticketResult.filePath;
 
                         if (createNewBranch) {
                             context = `You are working on ticket ${ticketId}.\n\nTicket file: ${ticketFilePath}\n\nYou are working in an isolated git worktree on branch '${ticketId}'.\nAll changes you make will be on this feature branch, not on main.\n\nInstructions:\n1. Read the ticket file to understand the task\n2. Complete the work described in the ticket\n3. Commit your changes to this feature branch\n\nWorking directory: ${workingDirectory}\nBranch: ${ticketId}\n\nPlease start working on this task.`;
